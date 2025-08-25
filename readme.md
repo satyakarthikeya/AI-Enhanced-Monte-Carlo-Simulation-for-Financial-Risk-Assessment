@@ -1,93 +1,74 @@
 # AI-Enhanced Monte Carlo Simulation for Financial Risk Assessment
 
-## Project Problem Statement & Implementation Plan
+## Quick Start Guide
 
----
+### Prerequisites
 
-## **Problem Statement**
+- Python 3.8+
+- MPI installation for HPC features (optional)
 
-### **Financial Risk Assessment Challenges**
+### Installation
 
-Modern financial institutions face critical challenges in accurately assessing and managing portfolio risks across diverse asset classes. Traditional risk assessment methodologies often fail to capture the complex, dynamic nature of financial markets and credit portfolios, leading to:
+1. **Clone the repository**
 
-**Credit Risk Assessment Gaps:**
+   ```bash
+   git clone https://github.com/satyakarthikeya/AI-Enhanced-Monte-Carlo-Simulation-for-Financial-Risk-Assessment.git
+   cd AI-Enhanced-Monte-Carlo-Simulation-for-Financial-Risk-Assessment
+   ```
 
-- Inadequate default probability modeling using static statistical approaches
-- Limited integration of behavioral patterns and utilization trends
-- Insufficient correlation modeling between individual credit exposures
-- Lack of real-time risk calculation capabilities for large portfolios
+2. **Install dependencies**
 
-**Market Risk Assessment Limitations:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-- Over-reliance on historical data without predictive modeling
-- Inadequate capture of volatility clustering and market regime changes
-- Limited Monte Carlo simulation capabilities due to computational constraints
-- Insufficient integration of AI/ML models with traditional risk metrics
+3. **Install MPI (for HPC features)**
 
-**Computational Performance Issues:**
+   ```bash
+   # Use our automatic installer
+   chmod +x install_mpi.sh
+   ./install_mpi.sh
+   ```
 
-- Slow risk calculation processing for large-scale portfolios
-- Limited parallel processing capabilities for Monte Carlo simulations
-- Inadequate real-time dashboard and visualization systems
-- Scalability constraints for million-iteration simulation requirements
+### Running the Preprocessing Pipeline
 
-### **Solution Approach**
+#### Standard Execution
 
-This project develops **dual AI-enhanced Monte Carlo simulation pipelines** that integrate advanced machine learning models with high-performance computing to deliver comprehensive, real-time financial risk assessment capabilities. The solution addresses both credit default risk and market volatility risk through sophisticated modeling and simulation techniques.
+```bash
+python src/run_preprocessing_pipeline.py
+```
 
----
+#### With MPI (High-Performance Computing)
 
-## **Project Overview**
+```bash
+mpirun -np 4 python src/run_preprocessing_pipeline.py --mpi
+```
 
-### **Core Objectives**
+### Repository Structure
 
-1. **Advanced Risk Modeling**: Implement AI/ML models (Random Forest, XGBoost, LSTM, GRU) for superior prediction accuracy
-2. **High-Performance Computing**: Utilize MPI4Py parallelization for scalable Monte Carlo simulations (1M+ iterations)
-3. **Comprehensive Risk Metrics**: Calculate industry-standard risk measures (VaR, CVaR, PD, EAD, LGD)
-4. **Real-Time Visualization**: Develop interactive dashboards for portfolio risk monitoring
-5. **Academic Excellence**: Demonstrate advanced integration of AI, HPC, and financial engineering
+- `src/` - Source code for all components
+- `archive/` - Raw datasets
+- `configs/` - Configuration files
+- `Images/` - Documentation images
 
-### **Technical Innovation**
+### Further Documentation
 
-- **Dual Pipeline Architecture**: Separate but integrated systems for credit and market risk
-- **AI-Enhanced Predictions**: Machine learning models improving traditional risk calculations
-- **Parallel Monte Carlo**: Distributed simulation processing for computational efficiency
-- **Professional Dashboards**: Industry-grade visualization and reporting capabilities
+- [Credit Card Pipeline Documentation](src/README.md)
+- [Project Problem Statement](docs/problem_statement.md)
 
----
+## Project Overview
 
-## **Technical Architecture**
+This project implements dual AI-enhanced Monte Carlo simulation pipelines that integrate advanced machine learning models with high-performance computing to deliver comprehensive, real-time financial risk assessment capabilities.
 
-### **Credit Card Default Risk Assessment Pipeline**
+The solution addresses both credit default risk and market volatility risk through sophisticated modeling and simulation techniques.
+
+### Credit Card Default Risk Assessment Pipeline
 
 ![Credit Card Default Risk Assessment Pipeline](Images/pipeline/credit.png)
 
-**Pipeline Flow:**
-
-```
-Data Collection (UCI Credit Card Dataset) → 
-Data Preprocessing & Feature Engineering (Utilization Ratios, Payment Behaviors) → 
-HPC Parallel Processing (Random Forest, XGBoost) → 
-Risk Calculation (PD×EAD×LGD, Credit VaR/CVaR) → 
-Monte Carlo Credit Simulation (Correlated Default Scenarios) → 
-Portfolio Risk Dashboard
-```
-
-### **Stock Market Risk Assessment Pipeline**
+### Stock Market Risk Assessment Pipeline
 
 ![Stock Market Risk Assessment Pipeline](Images/pipeline/stock.png)
-
-**Pipeline Flow:**
-
-```
-Data Collection (Yahoo Finance API) → 
-Data Preprocessing & Feature Engineering (Technical Indicators: RSI, MACD, SMA) → 
-AI Models (LSTM/GRU Neural Networks) → 
-HPC Parallel Processing (MPI4Py Multi-Core Distribution) → 
-Monte Carlo Simulation (Geometric Brownian Motion, 1M+ simulations) → 
-Risk Calculation (VaR, CVaR, Sharpe Ratio) → 
-Visualization Dashboard
-```
 
 ---
 
@@ -235,3 +216,15 @@ Visualization Dashboard
 - **Data Sources**: Yahoo Finance API (stocks), UCI Credit Card Dataset (credit)
 - **Visualization**: Matplotlib, Plotly for interactive dashboards
 - **HPC**: OpenMPI for parallel processing capabilities
+
+
+## Requirements
+
+- pandas, numpy, scikit-learn
+- joblib, mpi4py (for HPC)
+- matplotlib, seaborn
+- shap (for model explanations)
+
+## License
+
+MIT

@@ -22,39 +22,8 @@
    pip install -r requirements.txt
    ```
 
-3. **Install MPI (for HPC features)**
 
-   ```bash
-   # Use our automatic installer
-   chmod +x install_mpi.sh
-   ./install_mpi.sh
-   ```
 
-### Running the Preprocessing Pipeline
-
-#### Standard Execution
-
-```bash
-python src/run_preprocessing_pipeline.py
-```
-
-#### With MPI (High-Performance Computing)
-
-```bash
-mpirun -np 4 python src/run_preprocessing_pipeline.py --mpi
-```
-
-### Repository Structure
-
-- `src/` - Source code for all components
-- `archive/` - Raw datasets
-- `configs/` - Configuration files
-- `Images/` - Documentation images
-
-### Further Documentation
-
-- [Credit Card Pipeline Documentation](src/README.md)
-- [Project Problem Statement](docs/problem_statement.md)
 
 ## Project Overview
 
@@ -66,9 +35,6 @@ The solution addresses both credit default risk and market volatility risk throu
 
 ![Credit Card Default Risk Assessment Pipeline](Images/pipeline/credit.png)
 
-### Stock Market Risk Assessment Pipeline
-
-![Stock Market Risk Assessment Pipeline](Images/pipeline/stock.png)
 
 ---
 
@@ -158,41 +124,7 @@ The solution addresses both credit default risk and market volatility risk throu
 
 - **Dashboard Integration**: Real-time risk metric visualization
 
-### **Phase 3: Stock Market Risk Pipeline**
 
-**Duration: 3 weeks**
-
-#### **Market Data Infrastructure**
-
-- **Yahoo Finance API**: Integration for historical and real-time stock data
-
-- **Technical Indicators**: RSI, MACD, SMA, Bollinger Bands implementation
-
-- **Data Validation**: Quality assurance and missing data handling
-
-- **Multi-Asset Support**: Portfolio-level data collection and management
-
-#### **Deep Learning Models**
-
-- **LSTM Networks**: Long Short-Term Memory for time series prediction
-
-- **GRU Architecture**: Gated Recurrent Unit alternative implementation
-
-- **Hyperparameter Tuning**: Grid search optimization for neural networks
-
-- **Model Training**: TensorFlow/PyTorch implementation with GPU acceleration
-
-- **Performance Target**: >70% directional accuracy for price predictions
-
-#### **Advanced Monte Carlo Simulation**
-
-- **Geometric Brownian Motion**: Stock price path simulation
-
-- **Correlated Asset Modeling**: Multi-asset correlation matrix implementation
-
-- **Million-Scale Simulations**: Parallel processing for large-scale Monte Carlo
-
-- **Market Risk Metrics**: VaR, CVaR, Sharpe ratio, maximum drawdown
 
 #### **Integrated Risk Dashboard**
 

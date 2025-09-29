@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 """
 Model Evaluation Module for Credit Risk Assessment
 ==================================================

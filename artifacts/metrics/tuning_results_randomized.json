@@ -1,0 +1,30 @@
+{
+  "strategy": "randomized",
+  "best_params": {
+    "colsample_bylevel": 0.7800343042825855,
+    "colsample_bytree": 0.9906459823330611,
+    "gamma": 0.08220740266364626,
+    "learning_rate": 0.014957609935082258,
+    "max_delta_step": 0,
+    "max_depth": 3,
+    "min_child_weight": 3,
+    "n_estimators": 800,
+    "reg_alpha": 1.0618691666342728,
+    "reg_lambda": 1.843349493719275,
+    "subsample": 0.8658679267213983
+  },
+  "best_score": 0.7877238002403499,
+  "search_time": 448.6935088634491,
+  "n_iter": 20,
+  "scoring": "roc_auc",
+  "scale_pos_weight": 3.5208382387567694,
+  "validation_results": {
+    "accuracy": 0.755,
+    "auc": 0.7803852428209692,
+    "f1": 0.5351778656126482,
+    "threshold": 0.5,
+    "optimized_threshold": 0.7695652173913043,
+    "optimized_accuracy": 0.820625,
+    "optimized_f1": 0.47274954072259645
+  }
+}

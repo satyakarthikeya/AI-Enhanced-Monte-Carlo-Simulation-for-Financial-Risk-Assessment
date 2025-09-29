@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 """
 Model Evaluation Module for Credit Risk Assessment
 ==================================================
@@ -116,7 +116,6 @@ class ModelEvaluator:
             model_name: Name of the model being evaluated
             save_plots: Whether to save plots to disk
             plot_dir: Directory to save plots
-            
         """
         self.model_name = model_name
         self.save_plots = save_plots

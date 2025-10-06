@@ -166,14 +166,20 @@ class CreditRiskTrainer:
     def train_model(self, 
                    use_optimized_params: bool = True,
                    optimize_threshold: bool = True,
-                   save_model: bool = True) -> Dict[str, Any]:
+                   save_model: bool = True,
+                   use_cv: bool = False,
+                   cv_folds: int = 5,
+                   early_stopping_rounds: int = 50) -> Dict[str, Any]:
         """
-        Train XGBoost model using XGBoostModel component.
+        Train XGBoost model using XGBoostModel component with optional cross-validation.
         
         Args:
             use_optimized_params: Whether to use pre-optimized parameters
             optimize_threshold: Whether to optimize decision threshold
             save_model: Whether to save trained model
+            use_cv: Whether to use XGBoost's native cross-validation
+            cv_folds: Number of cross-validation folds (if use_cv=True)
+            early_stopping_rounds: Number of rounds for early stopping
             
         Returns:
             Dictionary containing training results
@@ -182,6 +188,8 @@ class CreditRiskTrainer:
             raise ValueError("Data not loaded. Call load_data() first.")
         
         self.logger.info("🎯 Training XGBoost model...")
+        if use_cv:
+            self.logger.info(f"   Using {cv_folds}-fold cross-validation with early stopping")
         
         # Initialize model
         self.model = XGBoostModel(random_state=self.random_state)
@@ -192,22 +200,26 @@ class CreditRiskTrainer:
             y_train=self.y_train
         )
         
-        # Train model
+        # Train model with optional CV
         training_results = self.model.train(
             X_train=self.X_train,
             y_train=self.y_train,
             X_val=self.X_val,
             y_val=self.y_val,
+            use_cv=use_cv,
+            cv_folds=cv_folds,
+            early_stopping_rounds=early_stopping_rounds,
             verbose=False
         )
         
         # Optimize threshold if requested
         if optimize_threshold and self.X_val is not None:
-            self.logger.info("🔧 Optimizing decision threshold...")
+            self.logger.info("🔧 Optimizing decision threshold for better recall...")
             threshold_results = self.model.optimize_threshold(
                 X_val=self.X_val,
                 y_val=self.y_val,
-                metric='accuracy'
+                metric='f1',  # Use F1 score instead of accuracy
+                target_recall=0.50  # Target at least 50% recall
             )
             training_results['threshold_optimization'] = threshold_results
         
@@ -378,9 +390,13 @@ class CreditRiskTrainer:
             plot_dir=str(self.artifacts_path / "visualizations")
         )
         
-        # Make predictions
-        y_pred = self.model.predict(X_eval)
+        # Make predictions using optimal threshold
         y_proba = self.model.predict_proba(X_eval)[:, 1]
+        # Use optimal threshold if available
+        optimal_threshold = getattr(self.model, 'optimal_threshold', 0.5)
+        y_pred = (y_proba >= optimal_threshold).astype(int)
+        
+        self.logger.info(f"Using threshold: {optimal_threshold:.3f} for predictions")
         
         # Evaluate model
         evaluation_results = self.evaluator.evaluate_model(

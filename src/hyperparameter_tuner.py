@@ -82,7 +82,7 @@ class HyperparameterTuner:
     
     def __init__(self, 
                  random_state: int = 42,
-                 n_jobs: int = -1,
+                 n_jobs: int = 6,
                  cv_folds: int = 5):
         """
         Initialize hyperparameter tuner.

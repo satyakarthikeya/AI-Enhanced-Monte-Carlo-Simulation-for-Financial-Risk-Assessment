@@ -35,16 +35,16 @@ class ModelConfig:
         }
         
         self.optimized_params = {
-            'n_estimators': 1500,
-            'max_depth': 6,
-            'learning_rate': 0.02,
-            'reg_alpha': 0.3,
-            'reg_lambda': 1.8,
-            'gamma': 0.05,
-            'subsample': 0.9,
-            'colsample_bytree': 0.85,
-            'colsample_bylevel': 0.9,
-            'min_child_weight': 2,
+            'n_estimators': 2000,
+            'max_depth': 8,
+            'learning_rate': 0.01,
+            'reg_alpha': 0.1,
+            'reg_lambda': 0.8,
+            'gamma': 0.0,
+            'subsample': 0.8,
+            'colsample_bytree': 0.8,
+            'colsample_bylevel': 0.85,
+            'min_child_weight': 1,
             'max_delta_step': 1
         }
     
@@ -111,6 +111,7 @@ class XGBoostModel:
         # Training history
         self.training_history = {}
         self.validation_scores = {}
+        self.threshold_metrics = {}
     
     def calculate_class_weights(self, y_train: Union[pd.Series, np.ndarray]) -> Dict[str, float]:
         """
@@ -137,11 +138,11 @@ class XGBoostModel:
         # Create class weight dictionary
         self.class_weights = dict(zip(classes, class_weights))
         
-        # Calculate scale_pos_weight (for XGBoost)
-        self.scale_pos_weight = self.class_weights[0] / self.class_weights[1]
+        # Calculate scale_pos_weight (for XGBoost) - multiply by 2 for better minority class focus
+        self.scale_pos_weight = (self.class_weights[0] / self.class_weights[1]) * 2.0
         
         self.logger.info(f"✓ Class weights calculated: {self.class_weights}")
-        self.logger.info(f"✓ Scale pos weight: {self.scale_pos_weight:.4f}")
+        self.logger.info(f"✓ Scale pos weight (2x enhanced): {self.scale_pos_weight:.4f}")
         
         return {
             'class_weights': self.class_weights,

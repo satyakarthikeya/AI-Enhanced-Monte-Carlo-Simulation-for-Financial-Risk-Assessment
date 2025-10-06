@@ -138,11 +138,11 @@ class XGBoostModel:
         # Create class weight dictionary
         self.class_weights = dict(zip(classes, class_weights))
         
-        # Calculate scale_pos_weight (for XGBoost) - multiply by 2 for better minority class focus
-        self.scale_pos_weight = (self.class_weights[0] / self.class_weights[1]) * 2.0
+        # Calculate scale_pos_weight (for XGBoost) - multiply by 3 for better minority class focus
+        self.scale_pos_weight = (self.class_weights[0] / self.class_weights[1]) * 3.0
         
         self.logger.info(f"✓ Class weights calculated: {self.class_weights}")
-        self.logger.info(f"✓ Scale pos weight (2x enhanced): {self.scale_pos_weight:.4f}")
+        self.logger.info(f"✓ Scale pos weight (3x enhanced): {self.scale_pos_weight:.4f}")
         
         return {
             'class_weights': self.class_weights,
@@ -207,15 +207,21 @@ class XGBoostModel:
               y_train: Union[pd.Series, np.ndarray],
               X_val: Optional[Union[pd.DataFrame, np.ndarray]] = None,
               y_val: Optional[Union[pd.Series, np.ndarray]] = None,
+              use_cv: bool = False,
+              cv_folds: int = 5,
+              early_stopping_rounds: int = 50,
               verbose: bool = False) -> Dict[str, Any]:
         """
-        Train the XGBoost model.
+        Train the XGBoost model with optional cross-validation.
         
         Args:
             X_train: Training features
             y_train: Training targets
             X_val: Validation features (optional)
             y_val: Validation targets (optional)
+            use_cv: Whether to use XGBoost's native cross-validation
+            cv_folds: Number of cross-validation folds (if use_cv=True)
+            early_stopping_rounds: Number of rounds for early stopping
             verbose: Whether to show training progress
             
         Returns:
@@ -231,20 +237,78 @@ class XGBoostModel:
         if isinstance(X_train, pd.DataFrame):
             self.feature_names = list(X_train.columns)
         
-        # Prepare evaluation set
-        eval_set = [(X_val, y_val)] if X_val is not None and y_val is not None else None
-        
-        # Train model
         import time
         start_time = time.time()
         
+        results = {
+            'n_features': X_train.shape[1],
+            'n_samples': X_train.shape[0]
+        }
+        
+        # Use XGBoost native cross-validation if requested
+        if use_cv:
+            self.logger.info(f"Using XGBoost native {cv_folds}-fold cross-validation...")
+            
+            # Create DMatrix for CV
+            dtrain = xgb.DMatrix(X_train, label=y_train)
+            
+            # Get model parameters
+            params = self.model.get_params()
+            
+            # Run cross-validation
+            cv_results = xgb.cv(
+                params=params,
+                dtrain=dtrain,
+                num_boost_round=params.get('n_estimators', 100),
+                nfold=cv_folds,
+                stratified=True,
+                metrics=['auc', 'logloss'],
+                early_stopping_rounds=early_stopping_rounds,
+                seed=self.random_state,
+                verbose_eval=verbose
+            )
+            
+            # Store CV results
+            best_iteration = len(cv_results)
+            cv_metrics = {
+                'best_iteration': best_iteration,
+                'cv_auc_mean': cv_results['test-auc-mean'].iloc[-1],
+                'cv_auc_std': cv_results['test-auc-std'].iloc[-1],
+                'cv_logloss_mean': cv_results['test-logloss-mean'].iloc[-1],
+                'cv_logloss_std': cv_results['test-logloss-std'].iloc[-1]
+            }
+            
+            results['cv_results'] = cv_metrics
+            
+            self.logger.info(f"✓ CV Results (Best iteration: {best_iteration}):")
+            self.logger.info(f"   • AUC: {cv_metrics['cv_auc_mean']:.4f} (±{cv_metrics['cv_auc_std']:.4f})")
+            self.logger.info(f"   • LogLoss: {cv_metrics['cv_logloss_mean']:.4f} (±{cv_metrics['cv_logloss_std']:.4f})")
+            
+            # Update model with best iteration
+            self.model.set_params(n_estimators=best_iteration)
+        
+        # Prepare evaluation set for final training
+        eval_set = [(X_val, y_val)] if X_val is not None and y_val is not None else None
+        
+        # Train final model
+        # Note: In XGBoost 2.0+, early_stopping_rounds is set via set_params or __init__
         if eval_set is not None:
-            self.model.fit(X_train, y_train, eval_set=eval_set, verbose=verbose)
+            # Set early stopping in model params for newer XGBoost versions
+            try:
+                self.model.fit(
+                    X_train, y_train, 
+                    eval_set=eval_set,
+                    verbose=verbose
+                )
+            except TypeError:
+                # Fallback for older versions
+                self.model.fit(X_train, y_train, verbose=verbose)
         else:
             self.model.fit(X_train, y_train, verbose=verbose)
         
         training_time = time.time() - start_time
         self.is_trained = True
+        results['training_time'] = training_time
         
         # Calculate training metrics
         train_pred = self.model.predict(X_train)
@@ -365,9 +429,10 @@ class XGBoostModel:
     def optimize_threshold(self, 
                           X_val: Union[pd.DataFrame, np.ndarray],
                           y_val: Union[pd.Series, np.ndarray],
-                          metric: str = 'accuracy',
-                          threshold_range: Tuple[float, float] = (0.1, 0.8),
-                          n_thresholds: int = 70) -> Dict[str, Any]:
+                          metric: str = 'f1',
+                          threshold_range: Tuple[float, float] = (0.05, 0.6),
+                          n_thresholds: int = 100,
+                          target_recall: Optional[float] = 0.50) -> Dict[str, Any]:
         """
         Optimize decision threshold for better performance.
         
@@ -377,6 +442,7 @@ class XGBoostModel:
             metric: Optimization metric ('accuracy', 'f1', 'precision', 'recall')
             threshold_range: Range of thresholds to test
             n_thresholds: Number of thresholds to test
+            target_recall: If set, find threshold meeting this recall, then optimize metric
             
         Returns:
             Dictionary containing optimization results
@@ -385,6 +451,8 @@ class XGBoostModel:
             raise ValueError("Model must be trained before threshold optimization")
         
         self.logger.info(f"Optimizing threshold using {metric} metric...")
+        if target_recall:
+            self.logger.info(f"   Target recall: {target_recall:.0%}")
         
         # Get probabilities
         y_proba = self.predict_proba(X_val)[:, 1]
@@ -396,34 +464,66 @@ class XGBoostModel:
         for threshold in thresholds:
             y_pred = (y_proba >= threshold).astype(int)
             
+            # Calculate all metrics
+            from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+            
+            recall = recall_score(y_val, y_pred)
+            precision = precision_score(y_val, y_pred, zero_division=0)
+            f1 = f1_score(y_val, y_pred)
+            accuracy = accuracy_score(y_val, y_pred)
+            
             if metric == 'accuracy':
-                from sklearn.metrics import accuracy_score
-                score = accuracy_score(y_val, y_pred)
+                score = accuracy
             elif metric == 'f1':
-                from sklearn.metrics import f1_score
-                score = f1_score(y_val, y_pred)
+                score = f1
             elif metric == 'precision':
-                from sklearn.metrics import precision_score
-                score = precision_score(y_val, y_pred)
+                score = precision
             elif metric == 'recall':
-                from sklearn.metrics import recall_score
-                score = recall_score(y_val, y_pred)
+                score = recall
             else:
                 raise ValueError(f"Unsupported metric: {metric}")
             
-            results.append((threshold, score))
+            results.append({
+                'threshold': threshold,
+                'score': score,
+                'recall': recall,
+                'precision': precision,
+                'f1': f1,
+                'accuracy': accuracy
+            })
         
         # Find best threshold
-        best_threshold, best_score = max(results, key=lambda x: x[1])
+        if target_recall:
+            # Filter thresholds that meet target recall
+            candidates = [r for r in results if r['recall'] >= target_recall]
+            if candidates:
+                # Among candidates, find best score
+                best_result = max(candidates, key=lambda x: x['score'])
+            else:
+                # If no threshold meets target, get closest
+                self.logger.warning(f"No threshold achieves recall >= {target_recall:.0%}")
+                best_result = max(results, key=lambda x: x['recall'])
+        else:
+            # Simply find best score
+            best_result = max(results, key=lambda x: x['score'])
+        
+        best_threshold = best_result['threshold']
+        best_score = best_result['score']
         self.optimal_threshold = best_threshold
         
         self.logger.info(f"✓ Optimal threshold: {best_threshold:.3f}")
         self.logger.info(f"✓ Best {metric}: {best_score:.4f}")
+        self.logger.info(f"✓ Recall at optimal: {best_result['recall']:.2%}")
+        self.logger.info(f"✓ Precision at optimal: {best_result['precision']:.2%}")
         
         return {
             'optimal_threshold': best_threshold,
             'best_score': best_score,
             'metric': metric,
+            'recall': best_result['recall'],
+            'precision': best_result['precision'],
+            'f1': best_result['f1'],
+            'accuracy': best_result['accuracy'],
             'all_results': results
         }
     

@@ -1,0 +1,52 @@
+
+        
+📊 EVALUATION REPORT: XGBoost Credit Risk Model
+============================================================
+
+Dataset: VAL
+Sample Size: 4,800
+Class Distribution: [3738 1062]
+
+PERFORMANCE METRICS:
+------------------------------
+• Accuracy:      0.8031
+• Precision:     0.6997
+• Recall:        0.1930
+• F1-Score:      0.3026
+• Specificity:   0.9765
+• MCC:          0.2939
+
+PROBABILITY-BASED METRICS:
+------------------------------
+• ROC AUC:       0.7777
+• PR AUC:        0.5384
+• Log Loss:      0.5032
+• Brier Score:   0.1502
+
+CONFUSION MATRIX:
+------------------------------
+                Predicted
+                No    Yes
+Actual No    3650    88
+       Yes    857   205
+
+• True Negatives:  3650
+• False Positives:   88
+• False Negatives:  857
+• True Positives:   205
+
+DETAILED CLASSIFICATION REPORT:
+------------------------------
+Class 0: Precision=0.810, Recall=0.976, F1=0.885
+Class 1: Precision=0.700, Recall=0.193, F1=0.303
+
+GENERATED VISUALIZATIONS:
+------------------------------
+• confusion_matrix_val.png
+• roc_curve_val.png
+• precision_recall_curve_val.png
+• threshold_analysis_val.png
+• evaluation_dashboard_val.png
+• feature_importance.png
+
+============================================================

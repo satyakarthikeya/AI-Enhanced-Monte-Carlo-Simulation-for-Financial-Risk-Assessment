@@ -177,41 +177,7 @@ Visualization Dashboard
 
 - **Dashboard Integration**: Real-time risk metric visualization
 
-### **Phase 3: Stock Market Risk Pipeline**
 
-**Duration: 3 weeks**
-
-#### **Market Data Infrastructure**
-
-- **Yahoo Finance API**: Integration for historical and real-time stock data
-
-- **Technical Indicators**: RSI, MACD, SMA, Bollinger Bands implementation
-
-- **Data Validation**: Quality assurance and missing data handling
-
-- **Multi-Asset Support**: Portfolio-level data collection and management
-
-#### **Deep Learning Models**
-
-- **LSTM Networks**: Long Short-Term Memory for time series prediction
-
-- **GRU Architecture**: Gated Recurrent Unit alternative implementation
-
-- **Hyperparameter Tuning**: Grid search optimization for neural networks
-
-- **Model Training**: TensorFlow/PyTorch implementation with GPU acceleration
-
-- **Performance Target**: >70% directional accuracy for price predictions
-
-#### **Advanced Monte Carlo Simulation**
-
-- **Geometric Brownian Motion**: Stock price path simulation
-
-- **Correlated Asset Modeling**: Multi-asset correlation matrix implementation
-
-- **Million-Scale Simulations**: Parallel processing for large-scale Monte Carlo
-
-- **Market Risk Metrics**: VaR, CVaR, Sharpe ratio, maximum drawdown
 
 #### **Integrated Risk Dashboard**
 

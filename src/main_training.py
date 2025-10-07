@@ -87,7 +87,7 @@ class CreditRiskTrainer:
         self.training_results = {}
         self.evaluation_results = {}
         
-        self.logger.info("🚀 Credit Risk Trainer initialized")
+        self.logger.info(" Credit Risk Trainer initialized")
         self.logger.info(f"   • Data path: {self.data_path}")
         self.logger.info(f"   • Artifacts path: {self.artifacts_path}")
         self.logger.info(f"   • Random state: {self.random_state}")
@@ -120,7 +120,7 @@ class CreditRiskTrainer:
         Returns:
             Dictionary containing data loading results
         """
-        self.logger.info("📂 Loading and preparing data...")
+        self.logger.info(" Loading and preparing data...")
         
         # Initialize data loader
         self.data_loader = DataLoader(
@@ -155,7 +155,7 @@ class CreditRiskTrainer:
         if self.X_test is not None:
             data_summary['test_class_dist'] = np.bincount(self.y_test)
         
-        self.logger.info("✅ Data loading completed")
+        self.logger.info(" Data loading completed")
         self.logger.info(f"   • Training samples: {data_summary['train_samples']:,}")
         self.logger.info(f"   • Validation samples: {data_summary['val_samples']:,}")
         self.logger.info(f"   • Test samples: {data_summary['test_samples']:,}")
@@ -187,7 +187,7 @@ class CreditRiskTrainer:
         if self.X_train is None:
             raise ValueError("Data not loaded. Call load_data() first.")
         
-        self.logger.info("🎯 Training XGBoost model...")
+        self.logger.info(" Training XGBoost model...")
         if use_cv:
             self.logger.info(f"   Using {cv_folds}-fold cross-validation with early stopping")
         
@@ -229,12 +229,12 @@ class CreditRiskTrainer:
             with open(model_path, 'wb') as f:
                 pickle.dump(self.model, f)
             
-            self.logger.info(f"💾 Model saved: {model_path}")
+            self.logger.info(f" Model saved: {model_path}")
             training_results['model_path'] = str(model_path)
         
         self.training_results = training_results
-        
-        self.logger.info("✅ Model training completed")
+
+        self.logger.info(" Model training completed")
         self.logger.info(f"   • Training accuracy: {training_results['train_accuracy']:.4f}")
         if 'val_accuracy' in training_results:
             self.logger.info(f"   • Validation accuracy: {training_results['val_accuracy']:.4f}")
@@ -261,7 +261,7 @@ class CreditRiskTrainer:
         if self.X_train is None:
             raise ValueError("Data not loaded. Call load_data() first.")
         
-        self.logger.info(f"🔍 Starting hyperparameter tuning with {strategy} strategy...")
+        self.logger.info(f" Starting hyperparameter tuning with {strategy} strategy...")
         
         # Initialize tuner
         self.tuner = HyperparameterTuner(random_state=self.random_state)
@@ -344,10 +344,10 @@ class CreditRiskTrainer:
             with open(results_path, 'w') as f:
                 json.dump(serializable_results, f, indent=2)
             
-            self.logger.info(f"💾 Tuning results saved: {results_path}")
+            self.logger.info(f" Tuning results saved: {results_path}")
             tuning_results['results_path'] = str(results_path)
-        
-        self.logger.info("✅ Hyperparameter tuning completed")
+
+        self.logger.info(" Hyperparameter tuning completed")
         self.logger.info(f"   • Best {scoring}: {tuning_results['best_score']:.4f}")
         self.logger.info(f"   • Best parameters: {tuning_results['best_params']}")
         
@@ -380,9 +380,9 @@ class CreditRiskTrainer:
             X_eval, y_eval = self.X_train, self.y_train
         else:
             raise ValueError(f"Dataset '{dataset}' not available")
-        
-        self.logger.info(f"📊 Evaluating model on {dataset} data...")
-        
+
+        self.logger.info(f" Evaluating model on {dataset} data...")
+
         # Initialize evaluator
         self.evaluator = ModelEvaluator(
             model_name="XGBoost Credit Risk Model",
@@ -408,7 +408,7 @@ class CreditRiskTrainer:
         
         # Create visualizations if requested
         if create_visualizations:
-            self.logger.info("🎨 Creating evaluation visualizations...")
+            self.logger.info(" Creating evaluation visualizations...")
             
             try:
                 # Create individual plots
@@ -436,13 +436,13 @@ class CreditRiskTrainer:
             with open(report_path, 'w') as f:
                 f.write(report)
             
-            self.logger.info(f"📄 Evaluation report saved: {report_path}")
+            self.logger.info(f"Evaluation report saved: {report_path}")
             evaluation_results['report_path'] = str(report_path)
         
         self.evaluation_results[dataset] = evaluation_results
         
         basic_metrics = evaluation_results['basic_metrics']
-        self.logger.info("✅ Model evaluation completed")
+        self.logger.info("Model evaluation completed")
         self.logger.info(f"   • Accuracy: {basic_metrics['accuracy']:.4f}")
         self.logger.info(f"   • Precision: {basic_metrics['precision']:.4f}")
         self.logger.info(f"   • Recall: {basic_metrics['recall']:.4f}")
@@ -471,7 +471,7 @@ class CreditRiskTrainer:
         Returns:
             Dictionary containing all pipeline results
         """
-        self.logger.info("🔥 Starting complete credit risk training pipeline...")
+        self.logger.info("Starting complete credit risk training pipeline...")
         
         pipeline_results = {}
         
@@ -531,9 +531,9 @@ class CreditRiskTrainer:
         with open(pipeline_summary_path, 'w') as f:
             json.dump(summary, f, indent=2, default=str)
         
-        self.logger.info(f"📋 Pipeline summary saved: {pipeline_summary_path}")
+        self.logger.info(f" Pipeline summary saved: {pipeline_summary_path}")
         
-        self.logger.info("🎉 Complete pipeline execution finished successfully!")
+        self.logger.info(" Complete pipeline execution finished successfully!")
         
         return pipeline_results
 
@@ -692,11 +692,11 @@ Examples:
                 n_iter=args.n_iter
             )
         
-        print("\n🎉 Execution completed successfully!")
-        print("📁 Check artifacts/ directory for saved models, metrics, and visualizations")
+        print("\n Execution completed successfully!")
+        print("Check artifacts/ directory for saved models, metrics, and visualizations")
         
     except Exception as e:
-        print(f"\n❌ Error during execution: {e}")
+        print(f"\n Error during execution: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

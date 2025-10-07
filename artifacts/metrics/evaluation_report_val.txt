@@ -9,36 +9,36 @@ Class Distribution: [3738 1062]
 
 PERFORMANCE METRICS:
 ------------------------------
-• Accuracy:      0.8031
-• Precision:     0.6997
-• Recall:        0.1930
-• F1-Score:      0.3026
-• Specificity:   0.9765
-• MCC:          0.2939
+• Accuracy:      0.7698
+• Precision:     0.4842
+• Recall:        0.6186
+• F1-Score:      0.5432
+• Specificity:   0.8127
+• MCC:          0.3976
 
 PROBABILITY-BASED METRICS:
 ------------------------------
-• ROC AUC:       0.7777
-• PR AUC:        0.5384
-• Log Loss:      0.5032
-• Brier Score:   0.1502
+• ROC AUC:       0.7759
+• PR AUC:        0.5367
+• Log Loss:      0.4524
+• Brier Score:   0.1389
 
 CONFUSION MATRIX:
 ------------------------------
                 Predicted
                 No    Yes
-Actual No    3650    88
-       Yes    857   205
+Actual No    3038   700
+       Yes    405   657
 
-• True Negatives:  3650
-• False Positives:   88
-• False Negatives:  857
-• True Positives:   205
+• True Negatives:  3038
+• False Positives:  700
+• False Negatives:  405
+• True Positives:   657
 
 DETAILED CLASSIFICATION REPORT:
 ------------------------------
-Class 0: Precision=0.810, Recall=0.976, F1=0.885
-Class 1: Precision=0.700, Recall=0.193, F1=0.303
+Class 0: Precision=0.882, Recall=0.813, F1=0.846
+Class 1: Precision=0.484, Recall=0.619, F1=0.543
 
 GENERATED VISUALIZATIONS:
 ------------------------------
